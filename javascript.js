@@ -1,7 +1,7 @@
 // Function to load Excel file and update data and interface
 async function loadExcelFile() {
     try {
-        const response = await fetch('test.xlsx'); // Assuming test.xlsx is in the same directory
+        const response = await fetch('test.xlsx'); // Assuming test.xlsx is in the same directory as your HTML file
         const arrayBuffer = await response.arrayBuffer();
         const data = new Uint8Array(arrayBuffer);
         const workbook = XLSX.read(data, { type: 'array' });
@@ -34,36 +34,6 @@ setInterval(() => {
 
 // Initial setup
 loadExcelFile();
-
-// Function to handle file input change event
-document.getElementById('file-input').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
-            const tableBody = document.querySelector('#production-table tbody');
-            tableBody.innerHTML = '';
-            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-            jsonData.forEach((rowData, rowIndex) => {
-                if (rowIndex === 0) return;
-                const row = document.createElement('tr');
-                rowData.forEach((cellData, cellIndex) => {
-                    const cell = document.createElement(cellIndex === 0 ? 'th' : 'td');
-                    cell.textContent = cellData;
-                    row.appendChild(cell);
-                });
-                tableBody.appendChild(row);
-            });
-            displayTotalWorkers(jsonData);
-            updateWorkingHoursBar(); // Update working hours bar when loading Excel file
-        };
-        reader.readAsArrayBuffer(file);
-    }
-});
 
 // Function to update working hours bar
 function updateWorkingHoursBar() {
